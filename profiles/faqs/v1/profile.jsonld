@@ -1,0 +1,50 @@
+{
+    "@context": {
+        "prof": "http://www.w3.org/ns/dx/prof/",
+        "dcterms": "http://purl.org/dc/terms/",
+        "role": "http://www.w3.org/ns/dx/prof/role/",
+        "gs1": "https://ref.gs1.org/voc/"
+    },
+    "@id": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1",
+    "@type": "prof:Profile",
+    "dcterms:title": "GS1 FAQ Resource Profile v1",
+    "dcterms:description": "Profile describing the structure and semantics of FAQ resources linked from a GS1-conformant Digital Link resolver via the gs1:faqs link type. The target resource is a schema:FAQPage expressed in JSON-LD.",
+    "dcterms:issued": "2026-07-13",
+    "dcterms:creator": "Ralph Tröger",
+    "dcterms:license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "prof:hasToken": "gs1FaqProfileV1",
+    "prof:isProfileOf": "https://schema.org/FAQPage",
+    "prof:hasResource": [
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "JSON Schema (draft 2020-12)",
+            "dcterms:description": "Validates JSON representations of FAQ resources conforming to this profile.",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/schema.json",
+            "prof:hasRole": "role:validation",
+            "dcterms:format": "application/schema+json"
+        },
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "SHACL Shape",
+            "dcterms:description": "Validates JSON-LD/RDF representations of FAQ resources.",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/shape.ttl",
+            "prof:hasRole": "role:constraints",
+            "dcterms:format": "text/turtle"
+        },
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "Example instance",
+            "dcterms:description": "A conformant example FAQPage.",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/example.jsonld",
+            "prof:hasRole": "role:example",
+            "dcterms:format": "application/ld+json"
+        },
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "Human-readable specification",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/",
+            "prof:hasRole": "role:specification",
+            "dcterms:format": "text/html"
+        }
+    ]
+}

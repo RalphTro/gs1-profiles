@@ -1,0 +1,6 @@
+{
+    "@context": "https://schema.org",
+    "id": "https://example.com/resource",
+    "type": "Thing",
+    "name": "TEMPLATE example — replace with a conformant instance."
+}

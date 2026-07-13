@@ -1,0 +1,14 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema:  <https://schema.org/> .
+@prefix gs1:     <https://ref.gs1.org/voc/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix :        <https://ralphtro.github.io/gs1-profiles/profiles/_template/v1/shape#> .
+
+<https://ralphtro.github.io/gs1-profiles/profiles/_template/v1/shape.ttl>
+    a sh:NodeShape ;
+    dcterms:title "SHACL shape — TEMPLATE Profile v1" ;
+    dcterms:description "REPLACE THIS." .
+
+# Add your NodeShapes below.

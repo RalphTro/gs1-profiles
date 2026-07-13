@@ -1,0 +1,47 @@
+{
+    "@context": {
+        "prof": "http://www.w3.org/ns/dx/prof/",
+        "dcterms": "http://purl.org/dc/terms/",
+        "role": "http://www.w3.org/ns/dx/prof/role/",
+        "gs1": "https://ref.gs1.org/voc/"
+    },
+    "@id": "https://ralphtro.github.io/gs1-profiles/profiles/_template/v1",
+    "@type": "prof:Profile",
+    "dcterms:title": "TEMPLATE Profile v1",
+    "dcterms:description": "REPLACE THIS with a concise description of what the profile defines and which GS1 link type target resource it applies to.",
+    "dcterms:issued": "YYYY-MM-DD",
+    "dcterms:creator": "REPLACE THIS",
+    "dcterms:license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "prof:hasToken": "gs1TemplateProfileV1",
+    "prof:isProfileOf": "https://ref.gs1.org/voc/",
+    "prof:hasResource": [
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "JSON Schema",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/_template/v1/schema.json",
+            "prof:hasRole": "role:validation",
+            "dcterms:format": "application/schema+json"
+        },
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "SHACL Shape",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/_template/v1/shape.ttl",
+            "prof:hasRole": "role:constraints",
+            "dcterms:format": "text/turtle"
+        },
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "Example instance",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/_template/v1/example.jsonld",
+            "prof:hasRole": "role:example",
+            "dcterms:format": "application/ld+json"
+        },
+        {
+            "@type": "prof:ResourceDescriptor",
+            "dcterms:title": "Human-readable specification",
+            "prof:hasArtifact": "https://ralphtro.github.io/gs1-profiles/profiles/_template/v1/",
+            "prof:hasRole": "role:specification",
+            "dcterms:format": "text/html"
+        }
+    ]
+}

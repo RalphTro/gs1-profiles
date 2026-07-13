@@ -1,0 +1,31 @@
+{
+    "@context": {
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "dcterms": "http://purl.org/dc/terms/",
+        "prof": "http://www.w3.org/ns/dx/prof/",
+        "foaf": "http://xmlns.com/foaf/0.1/"
+    },
+    "@id": "https://ralphtro.github.io/gs1-profiles/catalog.jsonld",
+    "@type": "dcat:Catalog",
+    "dcterms:title": "GS1 Digital Link Resource Profiles Catalogue",
+    "dcterms:description": "A catalogue of machine-readable profiles for resources referenced from GS1-conformant Digital Link resolvers via the linkset context parameter.",
+    "dcterms:issued": "2026-07-13",
+    "dcterms:license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "dcterms:publisher": {
+        "@type": "foaf:Person",
+        "foaf:name": "Ralph Tröger"
+    },
+    "dcat:dataset": [
+        {
+            "@id": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1",
+            "@type": [
+                "dcat:Dataset",
+                "prof:Profile"
+            ],
+            "dcterms:title": "GS1 FAQ Resource Profile v1",
+            "dcterms:description": "Profile for FAQ resources linked via the gs1:faqs link type.",
+            "dcterms:identifier": "gs1FaqProfileV1",
+            "dcterms:issued": "2026-07-13"
+        }
+    ]
+}

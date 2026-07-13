@@ -1,0 +1,9 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ralphtro.github.io/gs1-profiles/profiles/_template/v1/schema.json",
+    "title": "TEMPLATE Profile",
+    "description": "REPLACE THIS with a description of the target resource.",
+    "type": "object",
+    "properties": {},
+    "additionalProperties": true
+}

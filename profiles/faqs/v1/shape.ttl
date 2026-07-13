@@ -1,0 +1,132 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema:  <https://schema.org/> .
+@prefix gs1:     <https://ref.gs1.org/voc/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix :        <https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/shape#> .
+
+<https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/shape.ttl>
+    a sh:NodeShape ;
+    dcterms:title "SHACL shape — GS1 FAQ Resource Profile v1" ;
+    dcterms:description "Validates JSON-LD/RDF representations of FAQ resources referenced via the gs1:faqs link type." ;
+    dcterms:license <https://www.apache.org/licenses/LICENSE-2.0> .
+
+# --- FAQPage (root) ------------------------------------------------------
+:FAQPageShape
+    a sh:NodeShape ;
+    sh:targetClass schema:FAQPage ;
+
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:inLanguage ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:pattern "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$" ;
+    ] ;
+
+    sh:property [
+        sh:path schema:about ;
+        sh:node :ProductShape ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:publisher ;
+        sh:node :OrganizationShape ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:mainEntity ;
+        sh:node :QuestionShape ;
+        sh:minCount 1 ;
+    ] .
+
+# --- Product -------------------------------------------------------------
+:ProductShape
+    a sh:NodeShape ;
+    sh:targetClass schema:Product ;
+    sh:nodeKind sh:IRI ;
+    sh:pattern "^https?://.+/01/[0-9]{14}(/.*)?$" ;
+
+    sh:property [
+        sh:path schema:gtin ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[0-9]{14}$" ;
+    ] ;
+
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:brand ;
+        sh:node :BrandShape ;
+        sh:maxCount 1 ;
+    ] .
+
+# --- Brand ---------------------------------------------------------------
+:BrandShape
+    a sh:NodeShape ;
+    sh:targetClass schema:Brand ;
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+# --- Organization (publisher) --------------------------------------------
+:OrganizationShape
+    a sh:NodeShape ;
+    sh:targetClass schema:Organization ;
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path schema:url ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+    ] .
+
+# --- Question / Answer ---------------------------------------------------
+:QuestionShape
+    a sh:NodeShape ;
+    sh:targetClass schema:Question ;
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path schema:acceptedAnswer ;
+        sh:node :AnswerShape ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+:AnswerShape
+    a sh:NodeShape ;
+    sh:targetClass schema:Answer ;
+    sh:property [
+        sh:path schema:text ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .

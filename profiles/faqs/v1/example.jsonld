@@ -1,0 +1,45 @@
+{
+    "@context": [
+        "https://schema.org",
+        "https://ref.gs1.org/voc/data/gs1Voc_v2_0-context.jsonld"
+    ],
+    "id": "https://example.com/products/04262431780036/faqs.jsonld",
+    "type": "FAQPage",
+    "name": "Frequently Asked Questions — Fictitious Premium Widget",
+    "inLanguage": "en",
+    "about": {
+        "id": "https://id.gs1.org/01/04262431780036",
+        "type": "Product",
+        "gtin": "04262431780036",
+        "name": "Fictitious Premium Widget",
+        "brand": {
+            "type": "Brand",
+            "name": "FictitiousOne"
+        }
+    },
+    "publisher": {
+        "type": "Organization",
+        "name": "FictitiousOne GmbH",
+        "url": "https://example.org/fictitiousone"
+    },
+    "mainEntity": [
+        {
+            "type": "Question",
+            "id": "https://example.com/products/04262431780036/faqs.jsonld#q1",
+            "name": "Where is this product manufactured?",
+            "acceptedAnswer": {
+                "type": "Answer",
+                "text": "This product is manufactured in Germany at our Cologne facility."
+            }
+        },
+        {
+            "type": "Question",
+            "id": "https://example.com/products/04262431780036/faqs.jsonld#q2",
+            "name": "Is the packaging recyclable?",
+            "acceptedAnswer": {
+                "type": "Answer",
+                "text": "Yes — the outer packaging is fully recyclable in accordance with the German Packaging Act (VerpackG)."
+            }
+        }
+    ]
+}

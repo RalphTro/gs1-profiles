@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/schema.json",
+  "title": "GS1 FAQ Page (gs1:faqs link type target)",
+  "description": "JSON Schema for FAQ resources returned when dereferencing a GS1 Digital Link qualified with the 'gs1:faqs' link type. The JSON-LD @context MUST include 'https://schema.org', since schema.org defines the core properties used in this resource. Additional contexts (e.g. the GS1 Web Vocabulary context) MAY be included.",
+  "type": "object",
+
+  "required": ["@context", "id", "type", "about", "mainEntity"],
+
+  "properties": {
+    "@context": {
+      "description": "JSON-LD context. MUST include 'https://schema.org'. Additional context URIs (e.g. the GS1 Web Vocabulary context) MAY be added.",
+      "oneOf": [
+        {
+          "type": "string",
+          "const": "https://schema.org"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "format": "uri" },
+          "contains": {
+            "type": "string",
+            "const": "https://schema.org"
+          }
+        }
+      ]
+    },
+
+    "id": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical URI of the FAQ resource (typically the resolved gs1:faqs target)."
+    },
+
+    "type": {
+      "type": "string",
+      "const": "FAQPage"
+    },
+
+    "name": {
+      "type": "string",
+      "description": "Human-readable title of the FAQ page."
+    },
+
+    "inLanguage": {
+      "type": "string",
+      "description": "BCP 47 language tag.",
+      "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$"
+    },
+
+    "about": {
+      "description": "The product this FAQ page is about, identified via a GS1 Digital Link URI.",
+      "type": "object",
+      "required": ["id", "type", "gtin", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://.+/01/[0-9]{14}(/.*)?$",
+          "description": "GS1 Digital Link URI identifying the product. The GTIN component MUST be expressed as 14 digits (zero-padded if shorter)."
+        },
+        "type": { "type": "string", "const": "Product" },
+        "gtin": {
+          "type": "string",
+          "pattern": "^[0-9]{14}$",
+          "description": "GTIN expressed as 14 digits, as required by the GS1 Digital Link URI syntax. Shorter GTIN forms (GTIN-8/12/13) MUST be zero-padded to 14 digits."
+        },
+        "name": { "type": "string" },
+        "brand": {
+          "type": "object",
+          "required": ["type", "name"],
+          "properties": {
+            "type": { "type": "string", "const": "Brand" },
+            "name": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "publisher": {
+      "type": "object",
+      "required": ["type", "name"],
+      "properties": {
+        "type": { "type": "string", "const": "Organization" },
+        "name": { "type": "string" },
+        "url":  { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": true
+    },
+
+    "mainEntity": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The list of FAQ entries (Question/Answer pairs).",
+      "items": {
+        "type": "object",
+        "required": ["type", "name", "acceptedAnswer"],
+        "properties": {
+          "type": { "type": "string", "const": "Question" },
+          "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "Stable URI for the individual question (deep-linkable)."
+          },
+          "name": {
+            "type": "string",
+            "description": "The question text."
+          },
+          "acceptedAnswer": {
+            "type": "object",
+            "required": ["type", "text"],
+            "properties": {
+              "type": { "type": "string", "const": "Answer" },
+              "text": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+
+  "additionalProperties": true
+}

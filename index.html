@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GS1 Digital Link Resource Profiles</title>
+    <meta name="description"
+        content="Machine-readable profiles for resources referenced from GS1-conformant Digital Link resolvers.">
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 820px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            line-height: 1.6;
+            color: #222;
+        }
+
+        h1 {
+            border-bottom: 2px solid #f26522;
+            padding-bottom: 0.3rem;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 0.55rem;
+            text-align: left;
+        }
+
+        th {
+            background: #fafafa;
+        }
+
+        .status-experimental {
+            background: #fff5e6;
+            border-left: 4px solid #f26522;
+            padding: 0.7rem 1rem;
+            margin: 1rem 0;
+        }
+
+        a {
+            color: #f26522;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>GS1 Digital Link Resource Profiles</h1>
+
+    <div class="status-experimental">
+        <strong>Status: Experimental.</strong> URIs may migrate to
+        <code>https://w3id.org/{}/profiles/</code> once persistent
+        identifiers are registered.
+    </div>
+
+    <p>Machine-readable profiles for resources referenced from
+        GS1-conformant Digital Link resolvers via the <code>context</code>
+        parameter of a linkset.</p>
+
+    <h2>Available profiles</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Profile</th>
+                <th>Link type</th>
+                <th>Latest version</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>faqs/v1/">FAQs</td>
+                <td><code>gs1:faqs</code></td>
+                <td>v1</td>
+            </tr>
+            <tr>
+                <td>Master Data (core) 🚧</td>
+                <td><code>gs1:masterData</code></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>Retailers 🚧</td>
+                <td><code>gs1:hasRetailers</code></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>Allergen Info 🚧</td>
+                <td><code>gs1:allergenInfo</code></td>
+                <td>—</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Machine-readable catalogue</h2>
+    <p>Consumers can retrieve the full catalogue as JSON-LD/DCAT:
+        <code>catalog.jsonld</code>
+    </p>
+
+    <h2>Resources</h2>
+    <ul>
+        <li>catalog.jsonld — DCAT catalogue</li>
+        <li>Source repository</li>
+        <li>Licence: Apache-2.0</li>
+    </ul>
+</body>
+
+</html>
