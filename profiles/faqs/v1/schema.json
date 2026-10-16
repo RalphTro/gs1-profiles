@@ -1,15 +1,50 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/schema.json",
-  "title": "GS1 FAQ Page (gs1:faqs link type target)",
-  "description": "JSON Schema for FAQ resources returned when dereferencing a GS1 Digital Link qualified with the 'gs1:faqs' link type. The JSON-LD @context MUST include 'https://schema.org', since schema.org defines the core properties used in this resource. Additional contexts (e.g. the GS1 Web Vocabulary context) MAY be included.",
+  "title": "GS1 FAQ resource (gs1:faqs link type target)",
+  "description": "JSON Schema for FAQ resources returned when dereferencing a GS1 Digital Link qualified with the gs1:faqs link type. The resource MAY be represented either as a single FAQPage root object or as a JSON-LD @graph containing one or more FAQPage nodes.",
   "type": "object",
-
-  "required": ["@context", "id", "type", "about", "mainEntity"],
-
+  "required": [
+    "@context"
+  ],
   "properties": {
     "@context": {
-      "description": "JSON-LD context. MUST include 'https://schema.org'. Additional context URIs (e.g. the GS1 Web Vocabulary context) MAY be added.",
+      "$ref": "#/$defs/context"
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/faqPage"
+    },
+    {
+      "$ref": "#/$defs/graphDocument"
+    }
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "languageTag": {
+      "type": "string",
+      "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$"
+    },
+    "typeValue": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
+    "context": {
+      "description": "JSON-LD context. It MUST include https://schema.org. Additional URI contexts and inline context definitions MAY be included.",
       "oneOf": [
         {
           "type": "string",
@@ -18,111 +53,461 @@
         {
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string", "format": "uri" },
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "type": "array"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
           "contains": {
             "type": "string",
             "const": "https://schema.org"
-          }
+          },
+          "minContains": 1
         }
       ]
     },
-
-    "id": {
-      "type": "string",
-      "format": "uri",
-      "description": "Canonical URI of the FAQ resource (typically the resolved gs1:faqs target)."
-    },
-
-    "type": {
-      "type": "string",
-      "const": "FAQPage"
-    },
-
-    "name": {
-      "type": "string",
-      "description": "Human-readable title of the FAQ page."
-    },
-
-    "inLanguage": {
-      "type": "string",
-      "description": "BCP 47 language tag.",
-      "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$"
-    },
-
-    "about": {
-      "description": "The product this FAQ page is about, identified via a GS1 Digital Link URI.",
+    "uriReference": {
       "type": "object",
-      "required": ["id", "type", "gtin", "name"],
+      "required": [
+        "@id"
+      ],
       "properties": {
-        "id": {
+        "@id": {
           "type": "string",
-          "format": "uri",
-          "pattern": "^https?://.+/01/[0-9]{14}(/.*)?$",
-          "description": "GS1 Digital Link URI identifying the product. The GTIN component MUST be expressed as 14 digits (zero-padded if shorter)."
-        },
-        "type": { "type": "string", "const": "Product" },
-        "gtin": {
-          "type": "string",
-          "pattern": "^[0-9]{14}$",
-          "description": "GTIN expressed as 14 digits, as required by the GS1 Digital Link URI syntax. Shorter GTIN forms (GTIN-8/12/13) MUST be zero-padded to 14 digits."
-        },
-        "name": { "type": "string" },
-        "brand": {
-          "type": "object",
-          "required": ["type", "name"],
-          "properties": {
-            "type": { "type": "string", "const": "Brand" },
-            "name": { "type": "string" }
-          },
-          "additionalProperties": true
+          "format": "uri"
         }
       },
       "additionalProperties": true
     },
-
-    "publisher": {
+    "brand": {
       "type": "object",
-      "required": ["type", "name"],
+      "anyOf": [
+        {
+          "$ref": "#/$defs/uriReference"
+        },
+        {
+          "required": [
+            "@type",
+            "name"
+          ],
+          "properties": {
+            "@id": {
+              "type": "string",
+              "format": "uri"
+            },
+            "@type": {
+              "const": "Brand"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "product": {
+      "type": "object",
+      "required": [
+        "@type",
+        "gtin",
+        "name"
+      ],
       "properties": {
-        "type": { "type": "string", "const": "Organization" },
-        "name": { "type": "string" },
-        "url":  { "type": "string", "format": "uri" }
+        "@id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://.+/01/[0-9]{14}(/.*)?$",
+          "description": "GS1 Digital Link URI identifying the product. The GTIN component MUST be expressed as 14 digits."
+        },
+        "@type": {
+          "oneOf": [
+            {
+              "const": "Product"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "contains": {
+                "const": "Product"
+              }
+            }
+          ]
+        },
+        "gtin": {
+          "type": "string",
+          "pattern": "^[0-9]{14}$",
+          "description": "GTIN expressed as 14 digits."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "brand": {
+          "$ref": "#/$defs/brand"
+        }
       },
       "additionalProperties": true
     },
-
-    "mainEntity": {
-      "type": "array",
-      "minItems": 1,
-      "description": "The list of FAQ entries (Question/Answer pairs).",
-      "items": {
-        "type": "object",
-        "required": ["type", "name", "acceptedAnswer"],
-        "properties": {
-          "type": { "type": "string", "const": "Question" },
-          "id": {
-            "type": "string",
-            "format": "uri",
-            "description": "Stable URI for the individual question (deep-linkable)."
-          },
-          "name": {
-            "type": "string",
-            "description": "The question text."
-          },
-          "acceptedAnswer": {
-            "type": "object",
-            "required": ["type", "text"],
-            "properties": {
-              "type": { "type": "string", "const": "Answer" },
-              "text": { "type": "string" }
-            },
-            "additionalProperties": true
-          }
+    "about": {
+      "description": "The entity the FAQ page is about. It MAY be represented as an @id reference or as a fully embedded entity.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/uriReference"
         },
-        "additionalProperties": true
-      }
+        {
+          "$ref": "#/$defs/product"
+        },
+        {
+          "type": "object",
+          "required": [
+            "@type",
+            "name"
+          ],
+          "properties": {
+            "@id": {
+              "type": "string",
+              "format": "uri"
+            },
+            "@type": {
+              "$ref": "#/$defs/typeValue"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "organization": {
+      "type": "object",
+      "required": [
+        "@type",
+        "name"
+      ],
+      "properties": {
+        "@id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "@type": {
+          "const": "Organization"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "legalName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": true
+    },
+    "publisher": {
+      "description": "The publisher of the FAQ page. It MAY be represented as an @id reference or as a fully embedded Organization.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/uriReference"
+        },
+        {
+          "$ref": "#/$defs/organization"
+        }
+      ]
+    },
+    "propertyValue": {
+      "type": "object",
+      "required": [
+        "@type",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "@type": {
+          "const": "PropertyValue"
+        },
+        "@id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {}
+      },
+      "additionalProperties": true
+    },
+    "answer": {
+      "type": "object",
+      "required": [
+        "@type",
+        "text"
+      ],
+      "properties": {
+        "@type": {
+          "const": "Answer"
+        },
+        "@id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inLanguage": {
+          "$ref": "#/$defs/languageTag"
+        },
+        "author": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/uriReference"
+            },
+            {
+              "$ref": "#/$defs/organization"
+            }
+          ]
+        },
+        "dateModified": {
+          "type": "string",
+          "format": "date"
+        },
+        "additionalProperty": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/propertyValue"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/propertyValue"
+              }
+            }
+          ]
+        },
+        "citation": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/uriReference"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/uriReference"
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "question": {
+      "type": "object",
+      "required": [
+        "@type",
+        "name",
+        "acceptedAnswer"
+      ],
+      "properties": {
+        "@type": {
+          "const": "Question"
+        },
+        "@id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inLanguage": {
+          "$ref": "#/$defs/languageTag"
+        },
+        "alternateName": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        },
+        "acceptedAnswer": {
+          "$ref": "#/$defs/answer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "faqPage": {
+      "type": "object",
+      "required": [
+        "@type",
+        "@id",
+        "about",
+        "mainEntity"
+      ],
+      "properties": {
+        "@context": {
+          "$ref": "#/$defs/context"
+        },
+        "@type": {
+          "oneOf": [
+            {
+              "const": "FAQPage"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "contains": {
+                "const": "FAQPage"
+              }
+            }
+          ]
+        },
+        "@id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inLanguage": {
+          "$ref": "#/$defs/languageTag"
+        },
+        "about": {
+          "$ref": "#/$defs/about"
+        },
+        "publisher": {
+          "$ref": "#/$defs/publisher"
+        },
+        "mainEntity": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/question"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "graphNode": {
+      "type": "object",
+      "required": [
+        "@type",
+        "@id"
+      ],
+      "properties": {
+        "@type": {
+          "$ref": "#/$defs/typeValue"
+        },
+        "@id": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "anyOf": [
+              {
+                "properties": {
+                  "@type": {
+                    "const": "FAQPage"
+                  }
+                },
+                "required": [
+                  "@type"
+                ]
+              },
+              {
+                "properties": {
+                  "@type": {
+                    "type": "array",
+                    "contains": {
+                      "const": "FAQPage"
+                    }
+                  }
+                },
+                "required": [
+                  "@type"
+                ]
+              }
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/faqPage"
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "graphDocument": {
+      "type": "object",
+      "required": [
+        "@context",
+        "@graph"
+      ],
+      "properties": {
+        "@context": {
+          "$ref": "#/$defs/context"
+        },
+        "@graph": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/graphNode"
+          },
+          "contains": {
+            "$ref": "#/$defs/faqPage"
+          },
+          "minContains": 1
+        }
+      },
+      "additionalProperties": true
     }
-  },
-
-  "additionalProperties": true
+  }
 }

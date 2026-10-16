@@ -1,132 +1,165 @@
-@prefix sh:      <http://www.w3.org/ns/shacl#> .
-@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
-@prefix schema:  <https://schema.org/> .
-@prefix gs1:     <https://ref.gs1.org/voc/> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix :        <https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/shape#> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+@prefix gs1:    <https://ref.gs1.org/voc/> .
+@prefix faqsh:  <https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/shapes#> .
 
-<https://ralphtro.github.io/gs1-profiles/profiles/faqs/v1/shape.ttl>
-    a sh:NodeShape ;
-    dcterms:title "SHACL shape — GS1 FAQ Resource Profile v1" ;
-    dcterms:description "Validates JSON-LD/RDF representations of FAQ resources referenced via the gs1:faqs link type." ;
-    dcterms:license <https://www.apache.org/licenses/LICENSE-2.0> .
+# RDF-level validation of GS1 FAQ resources. The same shapes apply to a
+# root FAQPage and to FAQPage nodes contained in a JSON-LD @graph.
 
-# --- FAQPage (root) ------------------------------------------------------
-:FAQPageShape
-    a sh:NodeShape ;
-    sh:targetClass schema:FAQPage ;
+faqsh:FAQPageShape a sh:NodeShape ;
+  sh:targetClass schema:FAQPage ;
+  sh:nodeKind sh:IRI ;
+  sh:property [
+    sh:path schema:name ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ;
+    sh:message "If supplied, FAQPage name must be one non-empty string."@en
+  ] ;
+  sh:property [
+    sh:path schema:inLanguage ; sh:maxCount 1 ; sh:datatype xsd:string ;
+    sh:pattern "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$" ;
+    sh:message "FAQPage inLanguage must be a BCP 47-style language tag."@en
+  ] ;
+  sh:property [
+    sh:path schema:about ; sh:minCount 1 ; sh:nodeKind sh:IRI ;
+    sh:message "FAQPage must reference at least one subject by IRI; it may be embedded or defined elsewhere."@en
+  ] ;
+  sh:property [
+    sh:path schema:publisher ; sh:nodeKind sh:IRI ;
+    sh:message "Publisher must be referenced by IRI; it may be embedded or defined elsewhere."@en
+  ] ;
+  sh:property [
+    sh:path schema:mainEntity ; sh:minCount 1 ; sh:class schema:Question ;
+    sh:node faqsh:QuestionShape ;
+    sh:message "FAQPage must have at least one mainEntity conforming to QuestionShape."@en
+  ] .
 
-    sh:property [
-        sh:path schema:name ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1 ;
-    ] ;
+faqsh:QuestionShape a sh:NodeShape ;
+  sh:class schema:Question ;
+  sh:property [
+    sh:path schema:name ; sh:minCount 1 ; sh:maxCount 1 ;
+    sh:datatype xsd:string ; sh:minLength 1 ;
+    sh:message "Question must have exactly one non-empty name."@en
+  ] ;
+  sh:property [
+    sh:path schema:inLanguage ; sh:maxCount 1 ; sh:datatype xsd:string ;
+    sh:pattern "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$"
+  ] ;
+  sh:property [
+    sh:path schema:alternateName ; sh:datatype xsd:string ; sh:minLength 1
+  ] ;
+  sh:property [
+    sh:path schema:acceptedAnswer ; sh:minCount 1 ; sh:maxCount 1 ;
+    sh:class schema:Answer ; sh:node faqsh:AnswerShape ;
+    sh:message "Question must have exactly one acceptedAnswer conforming to AnswerShape."@en
+  ] .
 
-    sh:property [
-        sh:path schema:inLanguage ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1 ;
-        sh:pattern "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$" ;
-    ] ;
+faqsh:AnswerShape a sh:NodeShape ;
+  sh:class schema:Answer ;
+  sh:property [
+    sh:path schema:text ; sh:minCount 1 ; sh:maxCount 1 ;
+    sh:datatype xsd:string ; sh:minLength 1 ;
+    sh:message "Answer must have exactly one non-empty text value."@en
+  ] ;
+  sh:property [
+    sh:path schema:inLanguage ; sh:maxCount 1 ; sh:datatype xsd:string ;
+    sh:pattern "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$"
+  ] ;
+  sh:property [ sh:path schema:author ; sh:nodeKind sh:IRI ] ;
+  sh:property [
+    sh:path schema:dateModified ; sh:maxCount 1 ; sh:datatype xsd:date ;
+    sh:message "dateModified must be an xsd:date."@en
+  ] ;
+  sh:property [
+    sh:path schema:additionalProperty ; sh:class schema:PropertyValue ;
+    sh:node faqsh:PropertyValueShape
+  ] ;
+  sh:property [ sh:path schema:citation ; sh:nodeKind sh:IRI ] .
 
-    sh:property [
-        sh:path schema:about ;
-        sh:node :ProductShape ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-    ] ;
+faqsh:PropertyValueShape a sh:NodeShape ;
+  sh:class schema:PropertyValue ;
+  sh:property [
+    sh:path schema:name ; sh:minCount 1 ; sh:maxCount 1 ;
+    sh:datatype xsd:string ; sh:minLength 1
+  ] ;
+  sh:property [ sh:path schema:value ; sh:minCount 1 ; sh:maxCount 1 ] .
 
-    sh:property [
-        sh:path schema:publisher ;
-        sh:node :OrganizationShape ;
-        sh:maxCount 1 ;
-    ] ;
+# Embedded entities are validated when typed and present in the graph.
+# Pure @id references remain permissible.
 
-    sh:property [
-        sh:path schema:mainEntity ;
-        sh:node :QuestionShape ;
-        sh:minCount 1 ;
-    ] .
+faqsh:ProductShape a sh:NodeShape ;
+  sh:targetClass schema:Product, gs1:Product ;
+  sh:property [
+    sh:path schema:name ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1
+  ] ;
+  sh:property [
+    sh:path schema:gtin ; sh:minCount 1 ; sh:maxCount 1 ;
+    sh:datatype xsd:string ; sh:pattern "^[0-9]{14}$" ;
+    sh:message "Product gtin must contain exactly 14 digits."@en
+  ] .
 
-# --- Product -------------------------------------------------------------
-:ProductShape
-    a sh:NodeShape ;
-    sh:targetClass schema:Product ;
-    sh:nodeKind sh:IRI ;
-    sh:pattern "^https?://.+/01/[0-9]{14}(/.*)?$" ;
+faqsh:ProductGroupShape a sh:NodeShape ;
+  sh:targetClass schema:ProductGroup ;
+  sh:property [
+    sh:path schema:name ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1
+  ] .
 
-    sh:property [
-        sh:path schema:gtin ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:pattern "^[0-9]{14}$" ;
-    ] ;
+faqsh:OrganizationShape a sh:NodeShape ;
+  sh:targetClass schema:Organization ;
+  sh:nodeKind sh:IRI ;
+  sh:property [
+    sh:path schema:name ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1
+  ] ;
+  sh:property [ sh:path schema:url ; sh:maxCount 1 ; sh:nodeKind sh:IRIOrLiteral ] .
 
-    sh:property [
-        sh:path schema:name ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-    ] ;
+faqsh:CreativeWorkShape a sh:NodeShape ;
+  sh:targetClass schema:CreativeWork ;
+  sh:nodeKind sh:IRI ;
+  sh:property [
+    sh:path schema:name ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1
+  ] .
 
-    sh:property [
-        sh:path schema:brand ;
-        sh:node :BrandShape ;
-        sh:maxCount 1 ;
-    ] .
+# Optional graph-completeness checks. These are warnings so that external
+# references remain valid.
 
-# --- Brand ---------------------------------------------------------------
-:BrandShape
-    a sh:NodeShape ;
-    sh:targetClass schema:Brand ;
-    sh:property [
-        sh:path schema:name ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-    ] .
+faqsh:FAQReferenceQualityShape a sh:NodeShape ;
+  sh:targetClass schema:FAQPage ;
+  sh:sparql [
+    a sh:SPARQLConstraint ; sh:severity sh:Warning ;
+    sh:message "The FAQ subject is referenced but not described in the same RDF graph."@en ;
+    sh:select """
+      PREFIX schema: <https://schema.org/>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      SELECT $this ?value WHERE {
+        $this schema:about ?value .
+        FILTER NOT EXISTS { ?value rdf:type ?type }
+      }
+    """
+  ] ;
+  sh:sparql [
+    a sh:SPARQLConstraint ; sh:severity sh:Warning ;
+    sh:message "The publisher is referenced but not described in the same RDF graph."@en ;
+    sh:select """
+      PREFIX schema: <https://schema.org/>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      SELECT $this ?value WHERE {
+        $this schema:publisher ?value .
+        FILTER NOT EXISTS { ?value rdf:type ?type }
+      }
+    """
+  ] .
 
-# --- Organization (publisher) --------------------------------------------
-:OrganizationShape
-    a sh:NodeShape ;
-    sh:targetClass schema:Organization ;
-    sh:property [
-        sh:path schema:name ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-    ] ;
-    sh:property [
-        sh:path schema:url ;
-        sh:nodeKind sh:IRI ;
-        sh:maxCount 1 ;
-    ] .
-
-# --- Question / Answer ---------------------------------------------------
-:QuestionShape
-    a sh:NodeShape ;
-    sh:targetClass schema:Question ;
-    sh:property [
-        sh:path schema:name ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-    ] ;
-    sh:property [
-        sh:path schema:acceptedAnswer ;
-        sh:node :AnswerShape ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-    ] .
-
-:AnswerShape
-    a sh:NodeShape ;
-    sh:targetClass schema:Answer ;
-    sh:property [
-        sh:path schema:text ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-    ] .
+faqsh:CitationReferenceQualityShape a sh:NodeShape ;
+  sh:targetClass schema:Answer ;
+  sh:sparql [
+    a sh:SPARQLConstraint ; sh:severity sh:Warning ;
+    sh:message "A citation is referenced but not typed as schema:CreativeWork in the same graph."@en ;
+    sh:select """
+      PREFIX schema: <https://schema.org/>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      SELECT $this ?value WHERE {
+        $this schema:citation ?value .
+        FILTER NOT EXISTS { ?value rdf:type schema:CreativeWork }
+      }
+    """
+  ] .
